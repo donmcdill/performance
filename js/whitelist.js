@@ -188,6 +188,8 @@ const substrings = [
 		,'multi-benefits.servicecanada.gc.ca' //CERB DFO
 		,'multi-benefices.servicecanada.gc.ca' //CERB DFO
 		,'pesdc.prv'
+		,'esdc.prv'
+		,'edsc.prv'
 		,'esin-sandbox.powerappsportals.com'	
 		,'srv2140-i2.services.gc.qat'	
 		,'srv2140-s.services.gc.qat'
