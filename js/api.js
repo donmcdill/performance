@@ -2685,6 +2685,8 @@ const mainQueue = (url, start, end, lang) => {
 
     console.log("isApp: " + $isApp)
 
+        $isIntra = ( /(https:\/\/[^\/]+\.prv)/.test(url) ) ? 1 : 0;
+        
         oUrl = url;
         url = url.substring(8, url.length)
         console.log(url)
@@ -2754,6 +2756,9 @@ const mainQueue = (url, start, end, lang) => {
             if ( $('#urlLang').html() == 1 ) { langAbbr = "fr"; }
             else { langAbbr = "en"; }
             url = url.substring(5, url.length)
+        } else if($isIntra) {
+			var match = ["trnd", "prvs", "metrics-new" ];
+			var langAbbr = "bi";
         } else {
             var match = ["trnd", "prvs", "srchAll", "snmAll", "srchLeftAll", "activityMap", "metrics-new", "fwylf" ]; //, "fle"];
             var langAbbr = "bi";
@@ -2794,7 +2799,7 @@ const mainQueue = (url, start, end, lang) => {
 
         // Get Google Search Console data if it is cached, if not it will query and update database 
         const dbGetGSC = () => {
-                if ( !$isApp ) {
+                if ( !$isApp && !$isIntra) {
                     $("#loadGSC").html($.i18n("FetchdataGSC"));
                     return Promise.all(apiCallGSC2(d, url, dbCall, oUrl, dDay, lang))
                 }
@@ -2815,7 +2820,7 @@ const mainQueue = (url, start, end, lang) => {
         // pull GSC data and display
         const getGSC = (res) => {
             console.log("LOOOG " + res)
-            if ( !$isApp ) {
+            if ( !$isApp && !$isIntra ) {
                 url = $("#urlStatic").html();
                 oUrl = $("#urlStatic").html();
                 dd = [$("#fromGSC").text(), $("#toGSC").text()];
@@ -2848,7 +2853,7 @@ const mainQueue = (url, start, end, lang) => {
             return Promise.resolve($tf);
             
         }
-        const getTitle = h2 => { if ( !$isApp ) { return Promise.all([getPageH1(h2[0]['url'])]) } return Promise.resolve($.i18n("Page-levelstatistics"));} 
+        const getTitle = h2 => { if ( !$isApp && !$isIntra ) { return Promise.all([getPageH1(h2[0]['url'])]) } return Promise.resolve($.i18n("Page-levelstatistics"));} 
 
         const chainError = (err) => {
           return Promise.reject(err)
@@ -2913,7 +2918,18 @@ const mainQueue = (url, start, end, lang) => {
 
                     ($("#details-panel2-lnk").closest("li")).addClass("hidden");
                     ($("#details-panel2")).addClass("hidden");
-                } else {
+                } else if ( $isIntra ){
+					$("#rap-container").addClass("hidden");
+                    $("#snum-container").addClass("hidden");
+                    $("#search-container").addClass("hidden");
+                    $("#fwlf-container").addClass("hidden");
+                    $("#srchA-container").addClass("hidden");
+                    $("#np-container").addClass("hidden");
+
+                    ($("#details-panel2-lnk").closest("li")).addClass("hidden");
+                    ($("#details-panel2")).addClass("hidden");
+					($("#h2href")).addClass("hidden");
+				} else {
                     $("#rap-container").removeClass("hidden");
                     $("#snum-container").removeClass("hidden");
                     $("#search-container").removeClass("hidden");
