@@ -143,6 +143,7 @@ try {
             echo $url;
 
             $isApp = 0;
+            $isIntra = 0;
 
             if (preg_match("/apps[1-8].ams-sga.cra-arc.gc.ca/", $url)) {
                 $url = substr( $url, 5, strlen($url));
@@ -152,7 +153,14 @@ try {
                 if ($oLang) { $dataLang = $data['langFra']; $lang = "fr"; }
                 else { $dataLang = $data['langEng']; $lang = "en"; }
 
-            } else {
+            } else if (preg_match("/[^\/]+\.prv/", $url)) {
+				$isIntra = 1;
+				$func = "contains";
+                $segFunc = "streq";
+                $isApp = 0;
+                $dataLang = "";
+                $lang = "bi";
+			} else {
                 $func = "contains";
                 $segFunc = "streq";
                 $isApp = 0;
@@ -172,6 +180,7 @@ try {
           
             $bUrl = substr('https://' . $origUrl, 0, 255);
 
+            if(!$isIntra) {
             $html = file_get_html('https://' . $origUrl);
 
             foreach ($html->find('form') as $e) {
@@ -199,6 +208,11 @@ try {
             $searchURL = "www.canada.ca" . $searchURL;
 
             $searchURLFormat = str_replace(".", "-", $searchURL);
+                
+            } else {
+				$titlePage = "Intranet";
+				$searchURL = "";
+			}    
 
             $globalSearchEn = "www.canada.ca/en/sr/srb.html";
             $globalSearchFr = "www.canada.ca/fr/sr/srb.html";
@@ -212,7 +226,7 @@ try {
                     $hasContextual = false;
                 }
                 else {
-                    if ( $isApp ) {
+                    if ( $isApp || $isIntra ) {
                         $type = ["trnd", "prvs", "metrics-new"];
                     } else {
                         $type = ["trnd", "prvs", "srchAll", "activityMap", "snmAll", "srchLeftAll", "metrics-new", "fwylf"];
